@@ -1,0 +1,59 @@
+project:
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v112_field_baselines
+
+inputs:
+  cohort_sample_manifest_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/sample_manifest.csv
+  features_csv: ""
+  planner_labels_csv: ""
+  rof_scores_csv: ""
+
+baselines:
+  commonroad_crime:
+    primary_no_recorded_future: true
+    metrics:
+      - HW
+      - THW
+      - TTC
+      - TTR
+      - TTB
+      - TTS
+      - ALongReq
+      - ALatReq
+  rss_style:
+    not_full_rss_stack: true
+    metrics:
+      - longitudinal_safe_distance_margin
+      - lateral_safe_distance_margin
+      - rss_danger_score
+  drivability:
+    primary_no_full_planner_count: true
+    secondary_diagnostic:
+      - full_planner_feasibility_count
+    metrics:
+      - emergency_brake_feasibility
+      - keep_lane_feasibility
+      - min_collision_time
+      - road_margin
+  forecast_risk:
+    forbid_recorded_future: true
+    forbid_candidate_action_survival: true
+    metrics:
+      - cv_forecast_collision_risk
+      - ca_forecast_collision_risk
+      - occupancy_overlap_integral_3s
+      - minimum_predicted_separation_3s
+
+evaluation:
+  endpoint: known_planner_failure
+  unknown_handling_primary: exclude
+  bootstrap_unit: scenario_id
+  bootstrap_replicates: 1000
+  bootstrap_seed: 42
+  primary_metrics:
+    - AUPRC
+    - Recall@5%FPR
+  secondary_metrics:
+    - AUROC
+    - Recall@1%FPR
+  comparisons: ROF_v2_composite:commonroad_crime_risk_score,ROF_v2_composite:rss_danger_score,ROF_v2_composite:drivability_risk_score,ROF_v2_composite:forecast_risk_score,ROF_v2_no_asr_composite:forecast_risk_score

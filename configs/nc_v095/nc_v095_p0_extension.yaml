@@ -1,0 +1,61 @@
+project:
+  repo_root: .
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v095_p0_extension
+
+inputs:
+  base_config: configs/my_nc_v11.yaml
+  v090_output_dir: results/nc_v090_scientific_audit
+  waymo_features_csv: ${ROF_WORK_DIR}/features/rof_features_val_full.csv
+  waymo_proximity_labels_csv: ${ROF_WORK_DIR}/labels/labels_val_full.csv
+  waymo_actionability_map_labels_csv: ${ROF_WORK_DIR}/labels/labels_actionability_moderate_full.csv
+  waymo_actionability_nomap_labels_csv: ${ROF_WORK_DIR}/labels/labels_actionability_moderate_nomap_full.csv
+  waymo_samples_dir: ${ROF_WORK_DIR}/samples
+  waymo_oof_predictions_csv: results/nc_v090_scientific_audit/waymo_oof_predictions.csv
+  commonroad_raw_root: ${COMMONROAD_SCENARIO_ROOT}
+  commonroad_results_dir: ${ROF_WORK_DIR}/results
+
+actionability_labels:
+  horizon_s: 3.0
+  dt_s: 0.1
+  obstacle_mode: oracle_future
+  rule: moderate
+  map_constrained_use_map: true
+  no_map_use_map: false
+  requested_horizon_variants_s: [2.0, 3.0, 4.0]
+  requested_lane_buffer_variants_m: [2.0, 3.0, 4.0]
+  requested_action_libraries: [base7, extended]
+  requested_future_handling: [skip_invalid, cv_fallback]
+
+evaluation:
+  fixed_fpr_nominal: 0.05
+  threshold_operator: ">="
+  bootstrap_replicates_manuscript_critical: 2000
+  bootstrap_replicates_exploratory: 1000
+  bootstrap_seed: 42
+  ci_type: percentile
+  n_jobs: -1
+
+secondary_context:
+  baseline_feature_set: strong_baseline_cv
+  enhanced_feature_sets:
+    - strong_baseline_cv_plus_strict_temporal_dynamics
+    - strong_baseline_cv_plus_strict_spatial_no_action
+    - strong_baseline_cv_plus_direct_action_ratios_only
+    - strong_baseline_cv_plus_explicit_ratio_field_excluded_current
+  endpoints:
+    - map_critical_or_worse
+    - map_candidate_set_infeasible
+    - nomap_critical_or_worse
+    - nomap_candidate_set_infeasible
+  manuscript_critical_endpoints:
+    - map_critical_or_worse
+  models:
+    - rf
+
+commonroad:
+  neutral_target_n: 1000
+  planner_candidate_count: 35
+  existing_pilot1000_labels_csv: ${ROF_WORK_DIR}/results/commonroad_planner_feasibility/pilot1000/commonroad_lattice_planner_labels_pilot1000.csv
+  existing_pilot1000_metrics_csv: ${ROF_WORK_DIR}/results/commonroad_planner_feasibility/pilot1000/scalar_eval/commonroad_planner_failure_scalar_metrics.csv
+  existing_pilot1000_deltas_csv: ${ROF_WORK_DIR}/results/commonroad_planner_feasibility/pilot1000/bootstrap/commonroad_planner_failure_bootstrap_deltas.csv

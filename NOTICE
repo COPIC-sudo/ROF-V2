@@ -1,0 +1,7 @@
+ROF Actionability
+Copyright 2026 The ROF Actionability Authors
+
+This product includes generated protocol-buffer modules derived from the
+Waymo Open Dataset code repository. Those files are identified under
+src/waymo_open_dataset/ and are subject to the Apache License 2.0 and the
+attribution described in THIRD_PARTY_NOTICES.md.

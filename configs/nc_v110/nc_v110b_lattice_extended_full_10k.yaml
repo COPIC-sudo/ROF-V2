@@ -1,0 +1,67 @@
+project:
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v110_commonroad_scaleup/full_10k_lattice_extended_fixed_taxonomy
+
+inputs:
+  reuse_sample_manifest_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base/sample_manifest.csv
+  reuse_cohort_manifest_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base/cohort_manifest.csv
+  samples_dir: ${ROF_WORK_DIR}/results/commonroad_samples/nc_v110_full_fixed_taxonomy_lattice_base_pool_dense/samples_json_gz
+  planner_labels_csv: ${ROF_WORK_DIR}/results/commonroad_planner_feasibility/nc_v110b_lattice_extended_full_10k/commonroad_lattice_planner_labels_nc_v110b_lattice_extended_full_10k.csv
+  features_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base/feature_score_table.csv
+  base_planner_labels_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base/planner_labels.csv
+  base_feature_score_table_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base/feature_score_table.csv
+
+taxonomy:
+  version: v110_fixed_taxonomy_001
+
+planner:
+  family: lattice_extended
+  horizon_s: 3.0
+  lane_buffer_m: 4.0
+  max_emergency_decel: -8.0
+  library_notes:
+    - stronger braking primitives include firm_brake, hard_brake, max_brake
+    - multiple acceleration levels from -8.0 to +2.0 m/s^2
+    - multiple yaw-rate/curvature levels through lateral offset and duration primitives
+    - reference/lane-offset primitives include +/-0.5m, +/-1m, +/-1.5m, +/-2m, +/-2.5m and fast dodge offsets
+
+cohort:
+  selection_protocol: reused_from_v110_full_fixed_taxonomy_lattice_base
+  no_resampling: true
+  target_samples_min: 10000
+  target_samples_max: 10000
+  min_unique_scenarios: 1000
+  max_samples_per_scenario: 10
+  seed: 42
+  require_label_feature_coverage: false
+  forbidden_selection_inputs:
+    - planner_label
+    - actionability_score
+    - ROF_score
+    - recorded_future_outcome
+    - fixed_taxonomy_outcome
+
+planner_label_suite:
+  variants:
+    - lattice_extended
+  primary_endpoint: known_failure
+  unknown_handling_primary: exclude
+
+evaluation:
+  bootstrap_unit: scenario_id
+  bootstrap_replicates: 2000
+  bootstrap_seed: 42
+  primary_metrics:
+    - AUPRC
+    - Recall@5%FPR
+  secondary_metrics:
+    - AUROC
+    - Recall@1%FPR
+  score_columns:
+    - temporal_composite
+    - ROF_v2_no_asr_composite
+    - ROF_v2_composite
+    - REDI_actionability
+    - distance_inverse
+    - TTC_inverse
+  comparisons: temporal_composite:distance_inverse,temporal_composite:TTC_inverse,ROF_v2_no_asr_composite:distance_inverse,ROF_v2_no_asr_composite:TTC_inverse,ROF_v2_composite:distance_inverse,ROF_v2_composite:TTC_inverse,REDI_actionability:distance_inverse,REDI_actionability:TTC_inverse

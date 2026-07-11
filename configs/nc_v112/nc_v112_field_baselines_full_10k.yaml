@@ -1,0 +1,77 @@
+project:
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v112_field_baselines/full_10k_fixed_taxonomy_lattice_base
+
+inputs:
+  fixed_v110_run: full_10k_fixed_taxonomy_lattice_base
+  cohort_sample_manifest_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base/sample_manifest.csv
+  sample_manifest_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base/sample_manifest.csv
+  planner_labels_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base/planner_labels.csv
+  features_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base/feature_score_table.csv
+  rof_scores_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base/feature_score_table.csv
+
+cohort_lock:
+  source_run: nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base
+  no_resampling: true
+  no_sample_manifest_replacement: true
+  no_v112_result_driven_cohort_changes: true
+
+baselines:
+  current_state_json:
+    enabled: true
+    forecast_horizon_s: 3.0
+    forecast_dt_s: 0.1
+    lane_half_width_m: 1.75
+    forbidden:
+      - recorded_future_trajectory
+      - candidate_action_survival
+      - endpoint_intermediate_fields
+      - planner_label_tuning
+  commonroad_crime:
+    primary_no_recorded_future: true
+    metrics:
+      - HW
+      - THW
+      - TTC
+      - TTR
+      - TTB
+      - TTS
+      - ALongReq
+      - ALatReq
+  rss_style:
+    not_full_rss_stack: true
+    metrics:
+      - rss_longitudinal_margin
+      - rss_lateral_margin
+      - rss_danger_score
+  drivability:
+    primary_no_full_planner_count: true
+    secondary_diagnostic:
+      - full_planner_feasibility_count
+    metrics:
+      - emergency_brake_feasible
+      - keep_lane_cv_feasible
+      - min_collision_time_keep_lane
+      - min_road_margin_keep_lane
+  forecast_risk:
+    forbid_recorded_future: true
+    forbid_candidate_action_survival: true
+    metrics:
+      - cv_forecast_collision_risk
+      - ca_forecast_collision_risk
+      - occupancy_overlap_integral_3s
+      - minimum_predicted_separation_3s
+
+evaluation:
+  endpoint: known_planner_failure
+  unknown_handling_primary: exclude
+  bootstrap_unit: scenario_id
+  bootstrap_replicates: 2000
+  bootstrap_seed: 42
+  primary_metrics:
+    - AUPRC
+    - Recall@5%FPR
+  secondary_metrics:
+    - AUROC
+    - Recall@1%FPR
+  comparisons: temporal_composite:distance_inverse,temporal_composite:TTC_inverse,temporal_composite:commonroad_crime_risk_score,temporal_composite:HW_inverse,temporal_composite:THW_inverse,temporal_composite:TTC_inverse_crime,temporal_composite:ALongReq_mps2,temporal_composite:ALatReq_mps2,temporal_composite:rss_danger_score,temporal_composite:rss_longitudinal_margin_inverse,temporal_composite:rss_lateral_margin_inverse,temporal_composite:drivability_risk_score,temporal_composite:forecast_risk_score,temporal_composite:cv_forecast_collision_risk,temporal_composite:occupancy_overlap_integral_3s,temporal_composite:minimum_predicted_separation_3s_inverse,ROF_v2_no_asr_composite:distance_inverse,ROF_v2_no_asr_composite:TTC_inverse,ROF_v2_no_asr_composite:commonroad_crime_risk_score,ROF_v2_no_asr_composite:HW_inverse,ROF_v2_no_asr_composite:THW_inverse,ROF_v2_no_asr_composite:TTC_inverse_crime,ROF_v2_no_asr_composite:ALongReq_mps2,ROF_v2_no_asr_composite:ALatReq_mps2,ROF_v2_no_asr_composite:rss_danger_score,ROF_v2_no_asr_composite:rss_longitudinal_margin_inverse,ROF_v2_no_asr_composite:rss_lateral_margin_inverse,ROF_v2_no_asr_composite:drivability_risk_score,ROF_v2_no_asr_composite:forecast_risk_score,ROF_v2_no_asr_composite:cv_forecast_collision_risk,ROF_v2_no_asr_composite:occupancy_overlap_integral_3s,ROF_v2_no_asr_composite:minimum_predicted_separation_3s_inverse,ROF_v2_composite:commonroad_crime_risk_score,ROF_v2_composite:rss_danger_score,ROF_v2_composite:drivability_risk_score,ROF_v2_composite:forecast_risk_score,REDI_actionability:commonroad_crime_risk_score,REDI_actionability:rss_danger_score,REDI_actionability:forecast_risk_score

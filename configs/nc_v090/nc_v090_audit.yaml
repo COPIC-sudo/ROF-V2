@@ -1,0 +1,60 @@
+project:
+  repo_root: .
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v090_scientific_audit
+
+inputs:
+  base_config: configs/my_nc_v11.yaml
+  waymo_features_csv: ${ROF_WORK_DIR}/features/rof_features_val_full.csv
+  waymo_proximity_labels_csv: ${ROF_WORK_DIR}/labels/labels_val_full.csv
+  waymo_actionability_map_labels_csv: ${ROF_WORK_DIR}/labels/labels_actionability_moderate_full.csv
+  waymo_actionability_nomap_labels_csv: ${ROF_WORK_DIR}/labels/labels_actionability_moderate_nomap_full.csv
+  commonroad_results_dir: ${ROF_WORK_DIR}/results
+
+splits:
+  outer_folds: 5
+  calibration_fraction_within_outer_train: 0.20
+  scenario_hash_seed: 42
+  rf_seeds: [41, 42, 43]
+
+models:
+  random_forest:
+    n_estimators: 80
+    criterion: gini
+    max_depth: null
+    min_samples_split: 2
+    min_samples_leaf: 2
+    max_features: sqrt
+    bootstrap: true
+    class_weight: balanced_subsample
+    n_jobs: -1
+  logistic_regression:
+    penalty: l2
+    C: 1.0
+    solver: lbfgs
+    class_weight: balanced
+    max_iter: 2000
+    tol: 0.0001
+    fit_intercept: true
+
+evaluation:
+  primary_metric: auprc
+  fixed_fpr_nominal: 0.05
+  bootstrap_replicates: 2000
+  bootstrap_seed: 42
+  threshold_operator: ">="
+
+feature_groups_v090:
+  strict_temporal_dynamics:
+    - ttad_s
+    - time_to_first_conflict_s
+    - early_blocking_ratio
+    - collapse_rate_max_per_s
+    - collapse_rate_mean_per_s
+  strict_spatial_no_action:
+    - rcr
+    - rfr_drv
+    - c_time
+    - gtoa_norm_union
+    - oce_norm
+    - c_density

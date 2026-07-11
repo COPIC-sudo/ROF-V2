@@ -1,0 +1,21 @@
+name: rof-actionability-commonroad
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - numpy>=1.24,<2.0
+  - pandas>=2.0,<2.3
+  - pyyaml>=6.0
+  - scipy>=1.11
+  - scikit-learn>=1.3
+  - shapely>=2.0
+  - joblib
+  - tqdm
+  - matplotlib>=3.8
+  - pytest>=8.0
+  - pip:
+      - commonroad-io
+      - commonroad-drivability-checker
+      - commonroad-crime
+      - -e .

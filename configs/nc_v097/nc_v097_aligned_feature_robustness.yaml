@@ -1,0 +1,75 @@
+project:
+  repo_root: .
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v097_aligned_feature_robustness
+
+inputs:
+  base_config: configs/my_nc_v11.yaml
+  v096_output_dir: results/nc_v096_endpoint_design_robustness
+  v096_variant_manifest_csv: results/nc_v096_endpoint_design_robustness/waymo_design_variant_manifest.csv
+  reference_features_csv: ${ROF_WORK_DIR}/features/rof_features_val_full.csv
+  waymo_samples_dir: ${ROF_WORK_DIR}/samples
+
+aligned_features:
+  dt_s: 0.1
+  variants:
+    - reference_h3_b3_base7_skip
+    - horizon_h2_b3_base7_skip
+    - horizon_h4_b3_base7_skip
+    - buffer_h3_b2_base7_skip
+    - buffer_h3_b4_base7_skip
+    - action_h3_b3_extended_skip
+    - future_h3_b3_base7_cvfallback
+  current_state_reuse:
+    - current_min_distance_m
+    - current_ttc_s
+    - ego_speed_kph
+    - agent_count
+    - nearest_agent_rel_speed_mps
+    - nearest_agent_closing_speed_mps
+    - ttc_closing_speed_mps
+    - nearby_agent_count_10m
+    - nearby_agent_count_20m
+  cv_regenerated:
+    - cv_rcr
+    - cv_rfr_drv
+    - cv_c_time
+    - cv_gtoa_norm_union
+    - cv_oce_norm
+    - cv_c_density
+    - cv_max_overlap_count
+  strict_temporal_regenerated:
+    - ttad_s
+    - time_to_first_conflict_s
+    - early_blocking_ratio
+    - collapse_rate_max_per_s
+    - collapse_rate_mean_per_s
+
+evaluation:
+  endpoint: actionability_critical_or_worse
+  positive_rule: ge2
+  baseline_feature_set: strong_baseline_cv_aligned
+  enhanced_feature_set: strong_baseline_cv_plus_strict_temporal_dynamics_aligned
+  outer_folds: 5
+  calibration_fraction_within_outer_train: 0.20
+  scenario_hash_seed: 42
+  rf_seeds: [41, 42, 43]
+  fixed_fpr_levels: [0.01, 0.05]
+  primary_fixed_fpr: 0.05
+  threshold_operator: ">="
+  bootstrap_replicates: 1000
+  bootstrap_seed: 42
+  ci_type: percentile
+  n_jobs: -1
+
+models:
+  random_forest:
+    n_estimators: 80
+    criterion: gini
+    max_depth: null
+    min_samples_split: 2
+    min_samples_leaf: 2
+    max_features: sqrt
+    bootstrap: true
+    class_weight: balanced_subsample
+    n_jobs: -1

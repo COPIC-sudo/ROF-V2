@@ -1,0 +1,274 @@
+project:
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v110_commonroad_scaleup/full_10k_fixed_taxonomy_lattice_base
+
+inputs:
+  scenario_manifest_csv: ${ROF_WORK_DIR}/results/commonroad_pilot_selection/commonroad_scenario_manifest.csv
+  selected_scenarios_csv: ${ROF_WORK_DIR}/results/commonroad_pilot_selection/nc_v110_full_fixed_taxonomy_scenarios_clean_h30.csv
+  sample_candidates_csv: ${ROF_WORK_DIR}/results/commonroad_samples/nc_v110_full_fixed_taxonomy_lattice_base_pool_dense/commonroad_dynamic_ego_samples_manifest.csv
+  samples_dir: ${ROF_WORK_DIR}/results/commonroad_samples/nc_v110_full_fixed_taxonomy_lattice_base_pool_dense/samples_json_gz
+  planner_labels_csv: ${ROF_WORK_DIR}/results/commonroad_planner_feasibility/nc_v110_full_fixed_taxonomy_lattice_base/commonroad_lattice_planner_labels_nc_v110_full_fixed_taxonomy_lattice_base.csv
+  features_csv: ${ROF_WORK_DIR}/results/commonroad_planner_feasibility/pilot1000/features/nc_v110_planner_full_fixed_taxonomy_lattice_base_rof_features.csv
+  commonroad_scenario_root: ${COMMONROAD_SCENARIO_ROOT}
+
+taxonomy:
+  version: v110_fixed_taxonomy_001
+
+full:
+  run_name: full_10k_fixed_taxonomy_lattice_base
+  taxonomy_version: v110_fixed_taxonomy_001
+  planner_family: lattice_base
+  n_scenarios_target_min: 1000
+  n_scenarios_target_max: 1500
+  n_samples_target_min: 10000
+  n_samples_target_max: 15000
+  preferred_samples: 10000
+  max_samples_per_scenario: 10
+  seed: 42
+
+planner:
+  horizon_s: 3.0
+  lane_buffer_m: 4.0
+
+dataset:
+  scenario_root: ${WAYMO_SCENARIO_ROOT}
+  split: validation
+  max_future_steps: 30
+  min_vehicle_count: 3
+  object_types:
+    - vehicle
+
+commonroad:
+  scenario_root: ${COMMONROAD_SCENARIO_ROOT}
+  enabled: true
+
+roi:
+  x_min: -20.0
+  x_max: 80.0
+  y_min: -30.0
+  y_max: 30.0
+
+labels:
+  future_horizon_s: 2.0
+  dt_s: 0.1
+  emergency_distance_m: 0.5
+  warning_distance_m: 2.0
+  caution_distance_m: 4.0
+  warning_time_s: 1.0
+  high_emergency_min_label: 2
+
+bev:
+  x_min: -20.0
+  x_max: 80.0
+  y_min: -30.0
+  y_max: 30.0
+  resolution_m: 0.5
+  lane_buffer_m: 2.0
+  preview_times_s:
+    - 0.5
+    - 1.0
+    - 1.5
+    - 2.0
+    - 3.0
+
+metrics:
+  tau_time_s: 1.0
+  tfrc_min_area_m2: 1.0
+  tfrc_min_ratio: 0.01
+  use_drivable_mask: true
+  msr_require_drivable: true
+  msr_min_drivable_fraction: 0.8
+  max_msr_primitives: 1000
+  oce_ignore_zero: true
+
+redi:
+  alpha_space: 0.4
+  alpha_time: 0.2
+  alpha_maneuver: 0.3
+  alpha_density: 0.1
+  density_lambda_gtoa: 0.7
+  density_lambda_oce: 0.3
+
+tube:
+  speed_bins_kph:
+    - 0
+    - 5
+    - 10
+    - 15
+    - 20
+    - 30
+    - 45
+    - 60
+    - 90
+    - 120
+  mu_bins:
+    - 0.3
+    - 0.5
+    - 0.8
+  friction_policy: nominal
+  assumed_mu: 0.5
+  mu_ego: 0.5
+  mu_other: 0.5
+  query_dt_s: 0.1
+  horizon_s: 3.0
+  existing_manifest_dir: ${ROF_WORK_DIR}/tube_library
+  primitive_manifest_dir: ${ROF_WORK_DIR}/tube_library
+  optional_vehicle_par_path: ""
+  alpha:
+    value: auto
+    min_pts_alpha: 8
+    buffer_eps_m: 0.05
+    min_area_m2: 0.001
+  fallback:
+    build_if_missing: true
+    sim_dt_s: 0.05
+    steering_values_rad:
+      - -0.35
+      - -0.2
+      - -0.1
+      - 0.0
+      - 0.1
+      - 0.2
+      - 0.35
+    throttle_values:
+      - 0.0
+      - 0.25
+    brake_values:
+      - 0.0
+      - 0.3
+      - 0.6
+      - 1.0
+    use_two_segment: false
+    switch_times_s:
+      - 1.0
+    longitudinal_model:
+      a0: 0.0
+      a_th: 2.0
+      a_br: 8.0
+
+vehicle:
+  m_kg: 1413.0
+  Iz_kgm2: 1579.092
+  lf_m: 1.015
+  lr_m: 1.895
+  track_m: 1.54
+  h_cg_m: 0.54
+  Cf0_Nprad_front: 120000.0
+  Cr0_Nprad_rear: 100000.0
+  L_m: 4.6
+  W_m: 1.85
+
+stability:
+  eta_beta: 0.95
+  eta_r: 0.95
+  eta_ltr: 0.95
+  eta_ax: 0.95
+  eps_v_mps: 0.5
+  ltr_max_abs: 0.95
+
+analysis:
+  early_warning_distance_m: 4.0
+  early_warning_distance_strict_m: 6.0
+  early_warning_ttc_s: 2.0
+  early_warning_ttc_strict_s: 3.0
+  stratified_min_subset_n: 20
+  test_fraction: 0.25
+  random_seed: 42
+
+runtime:
+  device: cpu
+  num_workers: 4
+
+cv_baseline:
+  use_swept_footprint: true
+  footprint_inflation_m: 0.5
+  min_motion_for_swept_m: 0.05
+  heading_source: velocity_or_current
+  heading_speed_threshold_mps: 0.5
+
+actionability:
+  depletion_asr_threshold: 0.05
+  comfort_action_cost_threshold: 0.45
+  emergency_action_cost_threshold: 1.25
+  early_window_s: 0.5
+  first_conflict_threshold: 0.01
+  collapse_rate_scale: 1.0
+  redi_w_early_conflict: 0.2
+  redi_w_depletion: 0.3
+  redi_w_comfort: 0.2
+  redi_w_collapse: 0.2
+  redi_w_tta: 0.1
+  first_conflict_asr_threshold: 0.999
+  redi_weights:
+    space: 0.2
+    time: 0.15
+    cum_action_loss: 0.25
+    comfort_loss: 0.15
+    collapse: 0.15
+    density: 0.1
+
+cohort:
+  selection_protocol: outcome_blind_neutral_stratified
+  target_samples_min: 10000
+  target_samples_max: 10000
+  min_unique_scenarios: 1000
+  max_samples_per_scenario: 10
+  seed: 42
+  require_label_feature_coverage: false
+  forbidden_selection_inputs:
+    - planner_failure
+    - planner_success
+    - planner_failure_reason
+    - failure_taxonomy
+    - known_failure
+    - unknown_failure
+    - no_failure
+    - fixed_taxonomy_outcome
+    - actionability_label_id
+    - redi_actionability
+    - REDI_actionability
+    - ROF_v2_composite
+    - recorded_future_outcome
+    - reads_recorded_future
+
+planner_label_suite:
+  variants:
+    - lattice_base
+  optional_variants:
+    lattice_extended:
+      enabled: false
+      reason: not implemented / not executed in current full run
+    planner_native_route_lattice:
+      enabled: false
+      reason: not implemented / not executed in current full run
+  endpoint_taxonomy:
+    - known_failure
+    - no_failure
+    - unknown_failure
+  primary_endpoint: known_failure
+  unknown_handling_primary: exclude
+
+evaluation:
+  bootstrap_unit: scenario_id
+  bootstrap_replicates: 2000
+  bootstrap_seed: 42
+  primary_metrics:
+    - AUPRC
+    - Recall@5%FPR
+  secondary_metrics:
+    - AUROC
+    - Recall@1%FPR
+  score_columns:
+    - temporal_composite
+    - ROF_v2_no_asr_composite
+    - ROF_v2_composite
+    - REDI_actionability
+    - distance_inverse
+    - TTC_inverse
+  comparisons: temporal_composite:distance_inverse,temporal_composite:TTC_inverse,ROF_v2_no_asr_composite:distance_inverse,ROF_v2_no_asr_composite:TTC_inverse,ROF_v2_composite:distance_inverse,ROF_v2_composite:TTC_inverse,REDI_actionability:distance_inverse,REDI_actionability:TTC_inverse
+
+full_gates:
+  enabled: true
+  known_positive_min: 150
+  positive_scenario_min: 75
+  no_major_stratum_min_positives: 10

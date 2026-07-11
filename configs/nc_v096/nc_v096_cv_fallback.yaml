@@ -1,0 +1,62 @@
+project:
+  repo_root: .
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v096_cv_fallback
+
+inputs:
+  base_config: configs/my_nc_v11.yaml
+  waymo_features_csv: ${ROF_WORK_DIR}/features/rof_features_val_full.csv
+  waymo_proximity_labels_csv: ${ROF_WORK_DIR}/labels/labels_val_full.csv
+  waymo_actionability_reference_labels_csv: ${ROF_WORK_DIR}/labels/labels_actionability_moderate_full.csv
+  waymo_samples_dir: ${ROF_WORK_DIR}/samples
+  v090_metrics_csv: results/nc_v090_scientific_audit/waymo_confirmatory_metrics.csv
+  v090_deltas_csv: results/nc_v090_scientific_audit/waymo_paired_deltas.csv
+  v095_future_validity_claim_gate: results/nc_v095_p0_extension_envswitch/future_validity_claim_gate.md
+  v095_future_validity_model_sensitivity_csv: results/nc_v095_p0_extension_envswitch/future_validity_model_sensitivity.csv
+
+actionability_labels:
+  horizon_s: 3.0
+  dt_s: 0.1
+  lane_buffer_m: 3.0
+  threshold_rule: moderate
+  action_library: base7
+  reference_future_handling: skip_invalid_oracle_future
+  cv_future_handling: cv_fallback_invalid_future
+  pilot_sample_size: 500
+  pilot_seed: 42
+  heading_speed_threshold_mps: 0.5
+
+evaluation:
+  endpoints:
+    - endpoint: map_critical_or_worse_cv_fallback
+      positive_rule: ge2
+      bootstrap: true
+    - endpoint: map_candidate_set_infeasible_cv_fallback
+      positive_rule: eq3
+      bootstrap: true
+  feature_sets:
+    - strong_baseline_cv
+    - strong_baseline_cv_plus_strict_temporal_dynamics
+  outer_folds: 5
+  calibration_fraction_within_outer_train: 0.20
+  scenario_hash_seed: 42
+  rf_seeds: [41, 42, 43]
+  fixed_fpr_levels: [0.01, 0.05]
+  primary_fixed_fpr: 0.05
+  threshold_operator: ">="
+  bootstrap_replicates: 2000
+  bootstrap_seed: 42
+  ci_type: percentile
+  n_jobs: -1
+
+models:
+  random_forest:
+    n_estimators: 80
+    criterion: gini
+    max_depth: null
+    min_samples_split: 2
+    min_samples_leaf: 2
+    max_features: sqrt
+    bootstrap: true
+    class_weight: balanced_subsample
+    n_jobs: -1

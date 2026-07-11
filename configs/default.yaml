@@ -1,0 +1,156 @@
+# Public default configuration.
+# Copy configs/actionability_main_example.yaml to configs/my_local.yaml and
+# set local paths through environment variables before running experiments.
+
+project:
+  work_dir: ${ROF_WORK_DIR}
+
+dataset:
+  scenario_root: ${WAYMO_SCENARIO_ROOT}
+  split: validation
+  max_future_steps: 20
+  min_vehicle_count: 3
+  object_types:
+    - vehicle
+
+commonroad:
+  scenario_root: ${COMMONROAD_SCENARIO_ROOT}
+  output_dir: ${ROF_WORK_DIR}/commonroad
+  enabled: false
+
+roi:
+  x_min: -20.0
+  x_max: 80.0
+  y_min: -30.0
+  y_max: 30.0
+
+labels:
+  future_horizon_s: 2.0
+  dt_s: 0.1
+  emergency_distance_m: 0.5
+  warning_distance_m: 2.0
+  caution_distance_m: 4.0
+  warning_time_s: 1.0
+  high_emergency_min_label: 2
+
+bev:
+  x_min: -20.0
+  x_max: 80.0
+  y_min: -30.0
+  y_max: 30.0
+  resolution_m: 0.5
+  lane_buffer_m: 2.0
+  preview_times_s: [0.5, 1.0, 1.5, 2.0]
+
+metrics:
+  tau_time_s: 1.0
+  tfrc_min_area_m2: 1.0
+  tfrc_min_ratio: 0.01
+  use_drivable_mask: true
+  msr_require_drivable: true
+  msr_min_drivable_fraction: 0.8
+  max_msr_primitives: 1000
+  oce_ignore_zero: true
+
+redi:
+  alpha_space: 0.4
+  alpha_time: 0.2
+  alpha_maneuver: 0.3
+  alpha_density: 0.1
+  density_lambda_gtoa: 0.7
+  density_lambda_oce: 0.3
+
+tube:
+  speed_bins_kph: [30, 60, 120]
+  mu_bins: [0.3, 0.5, 0.8]
+  friction_policy: nominal
+  assumed_mu: 0.5
+  mu_ego: 0.5
+  mu_other: 0.5
+  query_dt_s: 0.1
+  horizon_s: 2.0
+  existing_manifest_dir: ${ROF_WORK_DIR}/tube_library
+  primitive_manifest_dir: ${ROF_WORK_DIR}/tube_library
+  optional_vehicle_par_path: ""
+  alpha:
+    value: auto
+    min_pts_alpha: 8
+    buffer_eps_m: 0.05
+    min_area_m2: 0.001
+  fallback:
+    build_if_missing: true
+    sim_dt_s: 0.05
+    steering_values_rad: [-0.35, -0.2, -0.1, 0.0, 0.1, 0.2, 0.35]
+    throttle_values: [0.0, 0.25]
+    brake_values: [0.0, 0.3, 0.6, 1.0]
+    use_two_segment: false
+    switch_times_s: [1.0]
+    longitudinal_model:
+      a0: 0.0
+      a_th: 2.0
+      a_br: 8.0
+
+vehicle:
+  m_kg: 1413.0
+  Iz_kgm2: 1579.092
+  lf_m: 1.015
+  lr_m: 1.895
+  track_m: 1.54
+  h_cg_m: 0.54
+  Cf0_Nprad_front: 120000.0
+  Cr0_Nprad_rear: 100000.0
+  L_m: 4.6
+  W_m: 1.85
+
+stability:
+  eta_beta: 0.95
+  eta_r: 0.95
+  eta_ltr: 0.95
+  eta_ax: 0.95
+  eps_v_mps: 0.5
+  ltr_max_abs: 0.95
+
+analysis:
+  early_warning_distance_m: 4.0
+  early_warning_distance_strict_m: 6.0
+  early_warning_ttc_s: 2.0
+  early_warning_ttc_strict_s: 3.0
+  stratified_min_subset_n: 20
+  test_fraction: 0.25
+  random_seed: 42
+
+runtime:
+  device: cpu
+  num_workers: 4
+
+cv_baseline:
+  use_swept_footprint: true
+  footprint_inflation_m: 0.5
+  min_motion_for_swept_m: 0.05
+  heading_source: velocity_or_current
+  heading_speed_threshold_mps: 0.5
+
+actionability:
+  depletion_asr_threshold: 0.05
+  first_conflict_asr_threshold: 0.999
+  early_window_s: 0.5
+  comfort_action_cost_threshold: 0.45
+  emergency_action_cost_threshold: 1.01
+  collapse_rate_scale: 1.0
+  redi_weights:
+    space: 0.2
+    time: 0.15
+    cum_action_loss: 0.25
+    comfort_loss: 0.15
+    collapse: 0.15
+    density: 0.1
+
+nc_experiments:
+  fixed_fpr_levels: [0.01, 0.05]
+  bootstrap_n: 500
+  relaxed_distance_bin_m: 3.0
+  relaxed_ttc_bin_s: 2.0
+  relaxed_speed_bin_kph: 10.0
+  relaxed_agent_count_bin: 10.0
+  lead_time_eval_fraction: 0.5
+  lead_time_min_pre_event_frames: 5

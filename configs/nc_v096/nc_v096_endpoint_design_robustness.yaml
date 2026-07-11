@@ -1,0 +1,92 @@
+project:
+  repo_root: .
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v096_endpoint_design_robustness
+
+inputs:
+  base_config: configs/my_nc_v11.yaml
+  v090_output_dir: results/nc_v090_scientific_audit
+  v095_output_dir: results/nc_v095_p0_extension_envswitch
+  waymo_features_csv: ${ROF_WORK_DIR}/features/rof_features_val_full.csv
+  waymo_proximity_labels_csv: ${ROF_WORK_DIR}/labels/labels_val_full.csv
+  waymo_actionability_map_labels_csv: ${ROF_WORK_DIR}/labels/labels_actionability_moderate_full.csv
+  waymo_actionability_nomap_labels_csv: ${ROF_WORK_DIR}/labels/labels_actionability_moderate_nomap_full.csv
+  waymo_samples_dir: ${ROF_WORK_DIR}/samples
+
+actionability_labels:
+  dt_s: 0.1
+  threshold_rule: moderate
+  map_constraint: map_constrained
+  reference_variant: reference_h3_b3_base7_skip
+  variants:
+    - variant_id: reference_h3_b3_base7_skip
+      family: reference
+      horizon_s: 3.0
+      lane_buffer_m: 3.0
+      action_library: base7
+      future_handling: skip_invalid
+    - variant_id: horizon_h2_b3_base7_skip
+      family: horizon
+      horizon_s: 2.0
+      lane_buffer_m: 3.0
+      action_library: base7
+      future_handling: skip_invalid
+    - variant_id: horizon_h4_b3_base7_skip
+      family: horizon
+      horizon_s: 4.0
+      lane_buffer_m: 3.0
+      action_library: base7
+      future_handling: skip_invalid
+    - variant_id: buffer_h3_b2_base7_skip
+      family: lane_buffer
+      horizon_s: 3.0
+      lane_buffer_m: 2.0
+      action_library: base7
+      future_handling: skip_invalid
+    - variant_id: buffer_h3_b4_base7_skip
+      family: lane_buffer
+      horizon_s: 3.0
+      lane_buffer_m: 4.0
+      action_library: base7
+      future_handling: skip_invalid
+    - variant_id: action_h3_b3_extended_skip
+      family: action_library
+      horizon_s: 3.0
+      lane_buffer_m: 3.0
+      action_library: extended
+      future_handling: skip_invalid
+    - variant_id: future_h3_b3_base7_cvfallback
+      family: future_handling
+      horizon_s: 3.0
+      lane_buffer_m: 3.0
+      action_library: base7
+      future_handling: cv_fallback
+
+evaluation:
+  feature_mode: LABEL_VARIANT_ONLY_WITH_REFERENCE_FEATURES
+  outer_folds: 5
+  calibration_fraction_within_outer_train: 0.20
+  scenario_hash_seed: 42
+  rf_seeds: [42]
+  minimum_required_seed: 42
+  optional_rf_seeds_if_runtime_allows: [41, 43]
+  fixed_fpr_levels: [0.01, 0.05]
+  primary_fixed_fpr: 0.05
+  threshold_operator: ">="
+  bootstrap_replicates: 1000
+  bootstrap_seed: 42
+  ci_type: percentile
+  n_jobs: -1
+  model: rf
+
+models:
+  random_forest:
+    n_estimators: 80
+    criterion: gini
+    max_depth: null
+    min_samples_split: 2
+    min_samples_leaf: 2
+    max_features: sqrt
+    bootstrap: true
+    class_weight: balanced_subsample
+    n_jobs: -1

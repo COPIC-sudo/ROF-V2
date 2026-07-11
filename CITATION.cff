@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "Please cite the accompanying article and this archived software release."
+title: "ROF Actionability: feasible-action collapse in autonomous-driving emergencies"
+type: software
+version: 1.1.0
+date-released: 2026-07-10
+authors:
+  - name: "ROF Actionability Authors"
+license: Apache-2.0
+abstract: >-
+  Research code for generating actionability labels, Waymo out-of-fold
+  analyses, expanded CommonRoad planner-facing validation, strict fixed-FPR
+  evaluation, field baselines, lattice action-library sensitivity,
+  label-feature decoupling audits, and manuscript figures.

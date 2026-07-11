@@ -1,0 +1,61 @@
+# Minimal public example configuration.
+# Copy this file or configs/actionability_main_example.yaml to a local config:
+#   cp configs/actionability_main_example.yaml configs/my_local.yaml
+# Then set ROF_WORK_DIR, WAYMO_SCENARIO_ROOT, and COMMONROAD_SCENARIO_ROOT
+# in your shell, or replace the placeholders with local paths.
+
+project:
+  work_dir: ${ROF_WORK_DIR}
+
+dataset:
+  scenario_root: ${WAYMO_SCENARIO_ROOT}
+  split: validation
+  max_future_steps: 20
+  min_vehicle_count: 3
+  object_types: [vehicle]
+
+commonroad:
+  scenario_root: ${COMMONROAD_SCENARIO_ROOT}
+  output_dir: ${ROF_WORK_DIR}/commonroad
+  enabled: false
+
+tube:
+  speed_bins_kph: [30, 60, 120]
+  mu_bins: [0.3, 0.5, 0.8]
+  friction_policy: nominal
+  assumed_mu: 0.5
+  mu_ego: 0.5
+  mu_other: 0.5
+  query_dt_s: 0.1
+  horizon_s: 2.0
+  existing_manifest_dir: ${ROF_WORK_DIR}/tube_library
+  primitive_manifest_dir: ${ROF_WORK_DIR}/tube_library
+  fallback:
+    build_if_missing: true
+    sim_dt_s: 0.05
+
+labels:
+  future_horizon_s: 2.0
+  dt_s: 0.1
+  emergency_distance_m: 0.5
+  warning_distance_m: 2.0
+  caution_distance_m: 4.0
+  warning_time_s: 1.0
+  high_emergency_min_label: 2
+
+actionability:
+  depletion_asr_threshold: 0.05
+  first_conflict_asr_threshold: 0.999
+  early_window_s: 0.5
+  comfort_action_cost_threshold: 0.45
+  emergency_action_cost_threshold: 1.01
+  collapse_rate_scale: 1.0
+
+analysis:
+  test_fraction: 0.25
+  random_seed: 42
+  stratified_min_subset_n: 20
+
+runtime:
+  device: cpu
+  num_workers: 4

@@ -1,0 +1,57 @@
+# Raw and derived data
+work_dirs/
+waymo_rof_work*/
+data/
+datasets/
+samples/
+features/
+labels/
+results/
+outputs/
+figures/generated/
+source_data/*.zip
+
+# Large binary artifacts
+*.tfrecord
+*.pkl
+*.pkl.gz
+*.npz
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.parquet
+
+# Local configuration
+configs/my_*.yaml
+configs/local*.yaml
+configs/*_local.yaml
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+.venv/
+venv/
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.ipynb_checkpoints/
+
+# Generated QA output
+github_readiness_report.md
+smoke_work/
+
+paper_release_verification.json

@@ -1,0 +1,56 @@
+project:
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v110_commonroad_scaleup
+
+inputs:
+  scenario_manifest_csv: ""
+  sample_candidates_csv: ""
+  sample_manifest_csv: ${ROF_WORK_DIR}/results/nc_v110_commonroad_scaleup/sample_manifest.csv
+  features_csv: ""
+  planner_labels_csv: ""
+
+cohort:
+  selection_protocol: outcome_blind_neutral_stratified
+  target_samples_min: 10000
+  target_samples_max: 15000
+  min_unique_scenarios: 1000
+  max_samples_per_scenario: 10
+  seed: 42
+  forbidden_selection_inputs:
+    - planner_failure
+    - planner_success
+    - failure_taxonomy
+    - actionability_label_id
+    - redi_actionability
+    - ROF_v2_composite
+
+planner_label_suite:
+  variants:
+    - lattice_base
+    - lattice_extended
+    - planner_native_route_lattice
+  endpoint_taxonomy:
+    - known_failure
+    - no_failure
+    - unknown_failure
+  primary_endpoint: known_failure
+  unknown_handling_primary: exclude
+
+evaluation:
+  bootstrap_unit: scenario_id
+  bootstrap_replicates: 1000
+  bootstrap_seed: 42
+  primary_metrics:
+    - AUPRC
+    - Recall@5%FPR
+  secondary_metrics:
+    - AUROC
+    - Recall@1%FPR
+  score_columns:
+    - ROF_v2_composite
+    - ROF_v2_no_asr_composite
+    - temporal_composite
+    - REDI_actionability
+    - distance_inverse
+    - TTC_inverse
+  comparisons: ROF_v2_composite:distance_inverse,ROF_v2_composite:TTC_inverse,ROF_v2_no_asr_composite:distance_inverse,temporal_composite:TTC_inverse

@@ -1,0 +1,18 @@
+# Optional snippet.  The patched code has these defaults even if you do not paste
+# this block into configs/default.yaml.  Paste these sections if you want explicit
+# control of CV baseline and early-warning subset thresholds.
+
+cv_baseline:
+  use_swept_footprint: true
+  footprint_inflation_m: 0.5
+  min_motion_for_swept_m: 0.05
+  heading_source: velocity_or_current    # current | velocity | velocity_or_current
+  heading_speed_threshold_mps: 0.5
+
+analysis:
+  # Keep your existing analysis keys, then add/modify these keys.
+  early_warning_distance_m: 4.0
+  early_warning_distance_strict_m: 6.0
+  early_warning_ttc_s: 2.0
+  early_warning_ttc_strict_s: 3.0
+  stratified_min_subset_n: 20

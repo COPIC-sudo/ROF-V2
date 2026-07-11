@@ -1,0 +1,68 @@
+project:
+  work_dir: ${ROF_WORK_DIR}
+  output_dir: results/nc_v111_decoupling_audit
+
+inputs:
+  features_csv: ""
+  labels_csv: ""
+  label_variants: []
+  feature_variants: []
+
+feature_lineage:
+  strict_feature_set: strict_non_action_current_cv
+  forbidden_in_strict:
+    - candidate-action-derived features
+    - candidate survival
+    - label horizon
+    - label lane buffer
+    - recorded future
+    - label columns
+  expected_features:
+    - current_min_distance_m
+    - current_ttc_s
+    - ego_speed_kph
+    - ego_speed_mps
+    - agent_count
+    - nearest_agent_rel_speed_mps
+    - nearest_agent_closing_speed_mps
+    - ttc_closing_speed_mps
+    - nearby_agent_count_10m
+    - nearby_agent_count_20m
+    - cv_rcr
+    - cv_rfr_drv
+    - cv_c_time
+    - cv_gtoa_norm_union
+    - cv_oce_norm
+    - cv_c_density
+    - cv_max_overlap_count
+    - redi_actionability
+    - asr_cum_final
+    - ttad_s
+    - collapse_rate_max_per_s
+
+label_feature_matrix:
+  label_variant_axes:
+    horizon_s: [2.0, 3.0, 4.0]
+    lane_buffer_m: [2.0, 3.0, 4.0]
+    action_library: [base7, extended]
+  feature_variant_axes:
+    horizon_s: [2.0, 3.0, 4.0]
+    lane_buffer_m: [2.0, 3.0, 4.0]
+    action_library: [base7, extended]
+  focus: off_diagonal_transfer
+
+evaluation:
+  endpoint: actionability_critical_or_worse
+  positive_rule: label_id_ge_2
+  model: rf
+  outer_folds: 5
+  scenario_hash_seed: 42
+  grouped_units:
+    - scenario_id
+    - segment_id
+  primary_metrics:
+    - AUPRC
+    - Recall@5%FPR
+  secondary_metrics:
+    - AUROC
+    - Recall@1%FPR
