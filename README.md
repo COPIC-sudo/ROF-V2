@@ -170,7 +170,3 @@ The exact final configurations are under `configs/nc_v110`, `configs/nc_v111`, a
 ## License and third-party material
 
 Unless otherwise noted, this repository is licensed under the Apache License 2.0. Generated Waymo protocol-buffer modules under `src/waymo_open_dataset/` are attributed in `THIRD_PARTY_NOTICES.md`. Waymo and CommonRoad datasets retain their own terms and are not redistributed.
-
-## Citation
-
-Update the repository URL and author metadata in `CITATION.cff` before the public release. Cite both the accompanying article and the archived software release.
