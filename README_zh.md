@@ -150,8 +150,3 @@ Figure 1 是 information-access 概念图，其 panel source tables 已包含在
 
 公开前请在 `CITATION.cff` 中替换 GitHub 地址和作者信息。
 
-## 发布前需要替换的元数据
-
-公开 GitHub 仓库前，请在 `CITATION.cff` 和 `pyproject.toml` 中替换作者信息，
-并在创建 GitHub/Zenodo 归档后补充仓库地址、commit SHA 和 DOI。可直接参考
-`docs/AVAILABILITY_STATEMENTS_TEMPLATE.md`。
