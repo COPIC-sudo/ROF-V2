@@ -148,5 +148,4 @@ Figure 1 是 information-access 概念图，其 panel source tables 已包含在
 
 除特别说明外，本仓库使用 Apache License 2.0。`src/waymo_open_dataset/` 下的 Waymo protobuf 生成模块在 `THIRD_PARTY_NOTICES.md` 中说明。Waymo 与 CommonRoad 原始数据不随仓库分发。
 
-公开前请在 `CITATION.cff` 中替换 GitHub 地址和作者信息。
 
